@@ -6,6 +6,10 @@ An ESP32-based local Wi-Fi controller and web dashboard for MAK Grills.
 
 This project intercepts telemetry from the grill's legacy Microchip RN-series Wi-Fi module, allowing you to monitor and control your grill entirely locally without relying on external cloud services. It provides a mobile-optimized, responsive UI with real-time graphing, customizable probe alarms, and push notifications.
 
+<p align="center">
+  <img src="images/dashboard.png" alt="MAK Controller Dashboard" width="640">
+</p>
+
 ## Features
 
 * **Local Control:** Uses DNS spoofing to intercept `makgrillsmobile.com` traffic, keeping all grill communication on your local network.
@@ -68,6 +72,10 @@ Because the ESP32 acts as a wireless bridge between the grill and your home netw
 5. Enter your home 2.4 GHz Wi-Fi credentials and your preferred `ntfy.sh` alert topic.
 6. Click **Save Wi-Fi & Connect**. The ESP32 will reboot and join your home network.
 7. Connect your MAK Grill to the ESP32's SoftAP. The grill will begin transmitting telemetry to the controller automatically.
+
+<p align="center">
+  <img src="images/setup.png" alt="MAK Controller Setup" width="640">
+</p>
 
 ## Grill Wi-Fi Provisioning
 
