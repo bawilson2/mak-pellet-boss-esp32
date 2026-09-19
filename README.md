@@ -1,5 +1,7 @@
 # MAK Pellet Boss
 
+I had already created a project to manage my own grill [(mak-controller)](https://github.com/bawilson2/mak-controller/blob/main/README.md) but that required some technical background and home equipment that not everybody has.  I created this project to be something that ANYBODY can use for a super minimal cost. 
+
 An ESP32-based local Wi-Fi controller and web dashboard for MAK Grills. 
 
 This project intercepts telemetry from the grill's legacy Microchip RN-series Wi-Fi module, allowing you to monitor and control your grill entirely locally without relying on external cloud services. It provides a mobile-optimized, responsive UI with real-time graphing, customizable probe alarms, and push notifications.
