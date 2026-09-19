@@ -44,13 +44,28 @@ The legacy MAK Wi-Fi module is hardcoded to POST telemetry data to a specific do
 You can install the firmware using a web-based flasher (no software required) or build it manually from the source code.
 
 ### Option 1: Web Flasher (Recommended)
-1. Download the latest `firmware.bin` file from the **Releases** page of this repository.
+1. Go to the **Releases** page of this repository and download all three `.bin` files: `bootloader.bin`, `partitions.bin`, and `firmware.bin`.
 2. Plug your ESP32 board into your computer using a data-capable USB cable.
 3. Open [ESPTool Web](https://esptool.spacehuhn.com/) using a Web Serial-compatible browser (like Google Chrome or Edge).
 4. Click **Connect** and select the COM/Serial port corresponding to your ESP32.
-5. Set the flash address to `0x10000`
-6. Select the `firmware.bin` file you downloaded and click **Program**.
+   
+   > **Troubleshooting: "Couldn't sync to ESP"**
+   > If the browser fails to connect, you must manually put the board into bootloader mode. On the Seeed Studio XIAO ESP32-S3, the **RESET (R)** button is to the left of the USB connection, and the **BOOT (B)** button is to the right.
+   > 1. Press and **hold** the BOOT button.
+   > 2. While holding BOOT, press and release the RESET button.
+   > 3. Release the BOOT button.
+   > 4. Click **Connect** in the browser again.
+
+5. In the ESPTool interface, use the **Add File** button to create three rows, and set them exactly as follows:
+   * `0x0` -> `bootloader.bin`
+   * `0x8000` -> `partitions.bin`
+   * `0x10000` -> `firmware.bin`
+6. Click **Program** to flash all three files to the board.
 7. Once flashing is complete, disconnect the USB cable to power off the ESP32, then plug it back in to boot the controller.
+
+<p align="center">
+  <img src="images/flashing.png" alt="Web Flashing Tool" width="640">
+</p>
 
 ### Option 2: Build from Source
 1. Clone this repository and open the project in your preferred IDE (PlatformIO or Arduino IDE).
