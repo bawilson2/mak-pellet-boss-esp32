@@ -51,15 +51,19 @@ You can install the firmware using a web-based flasher (no software required) or
    
    > **Troubleshooting: "Couldn't sync to ESP"**
    > If the browser fails to connect, you must manually put the board into bootloader mode. On the Seeed Studio XIAO ESP32-S3, the **RESET (R)** button is to the left of the USB connection, and the **BOOT (B)** button is to the right.
+<p align="center">
+  <img src="images/xiao-esp32s3-front.jpg" alt="XIAO buttons" width="640">
+</p>
+
    > 1. Press and **hold** the BOOT button.
    > 2. While holding BOOT, press and release the RESET button.
    > 3. Release the BOOT button.
    > 4. Click **Connect** in the browser again.
 
-5. In the ESPTool interface, use the **Add File** button to create three rows, and set them exactly as follows:
-   * `0x0` -> `bootloader.bin`
-   * `0x8000` -> `partitions.bin`
-   * `0x10000` -> `firmware.bin`
+5. In the ESPTool interface, use the **Add File** button to create three rows, and set them exactly as follows. See the picture for reference. 
+   * `0` -> `bootloader.bin`
+   * `8000` -> `partitions.bin`
+   * `10000` -> `firmware.bin`
 6. Click **Program** to flash all three files to the board.
 7. Once flashing is complete, disconnect the USB cable to power off the ESP32, then plug it back in to boot the controller.
 
@@ -82,11 +86,13 @@ Because the ESP32 acts as a wireless bridge between the grill and your home netw
 
 1. Power on the ESP32.
 2. Connect your phone or computer to the **MAK** Wi-Fi Access Point broadcast by the ESP32.
+   * **Network Name:** `MAK` 
+   * **Password:** `ABCDEFGH`
+
 3. Navigate to `http://192.168.4.1` in your browser.
 4. Click the **Settings** gear icon in the top right.
-5. Enter your home 2.4 GHz Wi-Fi credentials and your preferred `ntfy.sh` alert topic.
+5. Enter your home 2.4 GHz Wi-Fi credentials and your preferred `ntfy.sh` alert topic. Pick a unique topic name.  
 6. Click **Save Wi-Fi & Connect**. The ESP32 will reboot and join your home network.
-7. Connect your MAK Grill to the ESP32's SoftAP. The grill will begin transmitting telemetry to the controller automatically.
 
 <p align="center">
   <img src="images/setup.png" alt="MAK Controller Setup" width="640">
