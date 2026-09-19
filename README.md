@@ -47,7 +47,10 @@ You can install the firmware using a web-based flasher (no software required) or
 1. Go to the [Releases](https://github.com/bawilson2/mak-pellet-boss-esp32/releases) page of this repository and download all three `.bin` files: `bootloader.bin`, `partitions.bin`, and `firmware.bin`.
 2. Plug your ESP32 board into your computer using a data-capable USB cable.
 3. Open [ESPTool Web](https://esptool.spacehuhn.com/) using a Web Serial-compatible browser (like Google Chrome or Edge).
-4. Click **Connect** and select the COM/Serial port corresponding to your ESP32.
+4. Click **Connect** and select the COM/Serial port corresponding to your ESP32. Look for the "USB JTAG/serial debug unit". 
+<p align="center">
+  <img src="images/serial_port.png" alt="Serial Port" width="640">
+</p>
    
    > **Troubleshooting: "Couldn't sync to ESP"**
    > If the browser fails to connect, you must manually put the board into bootloader mode. On the Seeed Studio XIAO ESP32-S3, the **RESET (R)** button is to the left of the USB connection, and the **BOOT (B)** button is to the right.
