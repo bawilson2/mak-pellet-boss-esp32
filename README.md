@@ -22,7 +22,7 @@ This project intercepts telemetry from the grill's legacy Microchip RN-series Wi
 ## Hardware Requirements
 
 * **ESP32 Development Board**
-  * *Highly Recommended:*  [Seeed Studio XIAO ESP32S3] (https://www.amazon.com/dp/B0BYSB66S5)
+  * *Highly Recommended:*  [Seeed Studio XIAO ESP32S3](https://www.amazon.com/dp/B0BYSB66S5)
   * Choose a board that includes an external Wi-Fi antenna (such as the Seeed Studio XIAO ESP32-S3). Because this controller acts as a wireless bridge between your indoor router and your outdoor grill, an external antenna significantly improves range and connection stability compared to boards with only a built-in PCB antenna.
 * MAK Grill equipped with a Microchip RN-series Wi-Fi module
 * 5V USB power supply (e.g., a standard phone charger)
