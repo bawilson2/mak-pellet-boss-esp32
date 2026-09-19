@@ -44,7 +44,7 @@ The legacy MAK Wi-Fi module is hardcoded to POST telemetry data to a specific do
 You can install the firmware using a web-based flasher (no software required) or build it manually from the source code.
 
 ### Option 1: Web Flasher (Recommended)
-1. Go to the **Releases** page of this repository and download all three `.bin` files: `bootloader.bin`, `partitions.bin`, and `firmware.bin`.
+1. Go to the **[Releases](https://github.com/bawilson2/mak-pellet-boss-esp32/releases)** page of this repository and download all three `.bin` files: `bootloader.bin`, `partitions.bin`, and `firmware.bin`.
 2. Plug your ESP32 board into your computer using a data-capable USB cable.
 3. Open [ESPTool Web](https://esptool.spacehuhn.com/) using a Web Serial-compatible browser (like Google Chrome or Edge).
 4. Click **Connect** and select the COM/Serial port corresponding to your ESP32.
