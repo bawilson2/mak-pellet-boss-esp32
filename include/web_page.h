@@ -1111,7 +1111,7 @@ const char INDEX_HTML[] PROGMEM = R"rawliteral(
         if (data.ip && data.ip.indexOf('(AP)') !== -1) {
           document.getElementById('ipLabel').textContent = 'IP: ' + data.ip;
         } else {
-          document.getElementById('ipLabel').textContent = 'Status: Connected';
+          document.getElementById('ipLabel').textContent = 'Status: WiFi Connected';
         }
         document.getElementById('timerLabel').textContent = '| COOK: ' + formatElapsed(data.elapsed);
 
