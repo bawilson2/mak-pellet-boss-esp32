@@ -46,7 +46,7 @@ You can install the firmware using a web-based flasher (no software required) or
 4. Click **Connect** and select the COM/Serial port corresponding to your ESP32.
 5. Set the flash address to `0x10000` (or `0x0` if you are providing a single merged binary).
 6. Select the `firmware.bin` file you downloaded and click **Program**.
-7. Once flashing is complete, press the physical `RST` (Reset) button on the ESP32 board to boot the controller.
+7. Once flashing is complete, disconnect the USB cable to power off the ESP32, then plug it back in to boot the controller.
 
 ### Option 2: Build from Source
 1. Clone this repository and open the project in your preferred IDE (PlatformIO or Arduino IDE).
