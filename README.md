@@ -19,7 +19,8 @@ This project intercepts telemetry from the grill's legacy Microchip RN-series Wi
 * **Push Notifications:** Native integration with [ntfy.sh](https://ntfy.sh/) for instant mobile alerts when a probe hits its target.
 * **Safety Interlocks:** Hardware-enforced safety logic prevents remote ignition. The app only allows remote shutdown and securely locks the UI during the grill's physical cooldown cycle.
 
-[![Watch the video](https://img.youtube.com/vi/ELBhfyvaJqU/maxresdefault.jpg)](https://www.youtube.com/watch?v=ELBhfyvaJqU)
+[![Watch the video](./images/feature-thumbnail.jpg)](https://www.youtube.com/watch?v=ELBhfyvaJqU)
+
 
 ## Hardware Requirements
 
@@ -89,8 +90,7 @@ Because the ESP32 acts as a wireless bridge between the grill and your home netw
 
 ## Initial Setup
 
-[![Watch the video](https://img.youtube.com/vi/zDPeriSsi4U/maxresdefault.jpg)](https://www.youtube.com/watch?v=zDPeriSsi4U)
-
+[![Watch the video](./images/setup-thumbnail.jpg)](https://www.youtube.com/watch?v=zDPeriSsi4U)
 
 1. Power on the ESP32.
 2. Connect your phone or computer to the **MAK** Wi-Fi Access Point broadcast by the ESP32.
