@@ -7,6 +7,7 @@
 #include <ArduinoJson.h>
 #include <Preferences.h>
 #include <esp_wifi.h>
+#include <Update.h>
 
 #include "types.h"
 #include "web_page.h"
@@ -31,6 +32,11 @@ Preferences preferences;
 String homeSSID  = "";
 String homePass  = "";
 String ntfyTopic = "mak-grill-alerts-test";
+uint8_t apSubnet = 4;
+
+inline IPAddress getApIP() {
+  return IPAddress(192, 168, apSubnet, 1);
+}
 
 bool shouldReboot = false;
 unsigned long rebootTime = 0;
@@ -123,7 +129,7 @@ void wifiSniffer(void* buf, wifi_promiscuous_pkt_type_t type) {
     snprintf(dstIP, sizeof(dstIP), "%d.%d.%d.%d", ip[16], ip[17], ip[18], ip[19]);
 
     // Filter out broadcast and traffic correctly headed to the ESP32
-    if (strcmp(dstIP, "255.255.255.255") == 0 || strcmp(dstIP, "192.168.4.1") == 0) return;
+    if (strcmp(dstIP, "255.255.255.255") == 0 || strcmp(dstIP, getApIP().toString().c_str()) == 0) return;
 
     uint16_t dstPort = 0;
     int ipHeaderLen = (ip[0] & 0x0F) * 4;
@@ -180,6 +186,7 @@ void setup() {
   homeSSID  = preferences.getString("ssid", "");
   homePass  = preferences.getString("pass", "");
   ntfyTopic = preferences.getString("ntfy", "mak-grill-alerts-test");
+  apSubnet  = preferences.getUChar("ap_sub", 4);
   preferences.end();
 
   homeSSID.trim();
@@ -208,8 +215,8 @@ void setup() {
   // 2. Switch to Dual Mode and start the SoftAP exactly on Omada's channel
   WiFi.mode(WIFI_AP_STA);
 
-  IPAddress local_ip(192, 168, 4, 1);
-  IPAddress gateway(192, 168, 4, 1);
+  IPAddress local_ip = getApIP();
+  IPAddress gateway  = getApIP();
   IPAddress subnet(255, 255, 255, 0);
   WiFi.softAPConfig(local_ip, gateway, subnet);
   
@@ -277,8 +284,10 @@ server.on("/", HTTP_GET, []() {
     doc["power_cmd"]       = currentCommand.power;
     doc["power_actual"]    = currentState.power;
     doc["cooldown"]        = isCoolingDown;
-    doc["ip"]              = (WiFi.status() == WL_CONNECTED) ? WiFi.localIP().toString() : "192.168.4.1 (AP)";
+    doc["ip"] = (WiFi.status() == WL_CONNECTED) ? WiFi.localIP().toString() : (getApIP().toString() + " (AP)");
+    doc["ap_subnet"] = apSubnet;
     doc["ntfy"]            = ntfyTopic;
+    
     
 
     uint32_t elapsedSec = 0;
@@ -353,6 +362,23 @@ server.on("/", HTTP_GET, []() {
     }
   });
 
+  server.on("/api/ap/save", HTTP_POST, []() {
+    if (server.hasArg("subnet")) {
+      int val = server.arg("subnet").toInt();
+      if (val >= 0 && val <= 254) {
+        preferences.begin("mak-config", false);
+        preferences.putUChar("ap_sub", (uint8_t)val);
+        preferences.end();
+
+        server.send(200, "text/plain", "Subnet saved. Rebooting...");
+        shouldReboot = true;
+        rebootTime = millis() + 2000;
+        return;
+      }
+    }
+    server.send(400, "text/plain", "Invalid subnet octet (0 - 254)");
+  });
+
   server.on("/api/config/ntfy", HTTP_POST, []() {
     String newNtfy = server.hasArg("ntfy") ? server.arg("ntfy") : "";
     newNtfy.trim();
@@ -386,6 +412,54 @@ server.on("/", HTTP_GET, []() {
       server.send(400, "text/plain", "Invalid power state");
     }
   });
+
+  // ---------------------------------------------------------------------------
+  // Firmware OTA Upload Handlers
+  // ---------------------------------------------------------------------------
+  server.on("/api/update", HTTP_POST, 
+    // Response handler once the entire upload finishes
+    []() {
+      bool success = !Update.hasError();
+      server.sendHeader("Connection", "close");
+      server.send(success ? 200 : 500, "text/plain", success ? "OK" : "FAIL");
+      if (success) {
+        shouldReboot = true;
+        rebootTime = millis() + 1500;
+      }
+    },
+    // Streaming file chunk upload handler
+    []() {
+      HTTPUpload& upload = server.upload();
+
+      if (upload.status == UPLOAD_FILE_START) {
+        Serial.printf("[OTA] Starting firmware update: %s\n", upload.filename.c_str());
+        
+        // Disable power commands/critical loops while updating
+        currentCommand.power = 0;
+
+        // Allocate max possible sketch space on the flash partition
+        if (!Update.begin(UPDATE_SIZE_UNKNOWN)) {
+          Update.printError(Serial);
+        }
+      } 
+      else if (upload.status == UPLOAD_FILE_WRITE) {
+        if (Update.write(upload.buf, upload.currentSize) != upload.currentSize) {
+          Update.printError(Serial);
+        }
+      } 
+      else if (upload.status == UPLOAD_FILE_END) {
+        if (Update.end(true)) { // true = set size to current progress
+          Serial.printf("[OTA] Firmware update complete! Size: %u bytes\n", upload.totalSize);
+        } else {
+          Update.printError(Serial);
+        }
+      } 
+      else if (upload.status == UPLOAD_FILE_ABORTED) {
+        Update.end();
+        Serial.println("[OTA] Firmware update aborted.");
+      }
+    }
+  );
 
   server.on("/api/wifi/save", HTTP_POST, []() {
     String newSSID = server.hasArg("ssid") ? server.arg("ssid") : "";
@@ -542,7 +616,7 @@ void loop() {
     }
     domain[dIdx] = '\0';
     
-    Serial.printf("[%lu ms] [DNS] Spoofing %s -> 192.168.4.1\n", millis(), domain);
+    Serial.printf("[%lu ms] [DNS] Spoofing %s -> %s\n", millis(), domain, getApIP().toString().c_str());
 
     // Build raw DNS Response
     byte response[128];
@@ -580,7 +654,7 @@ void loop() {
       0x00, 0x01,             // Class IN
       0x00, 0x00, 0x00, 0x3C, // TTL (60 seconds)
       0x00, 0x04,             // Data length (4 bytes)
-      192, 168, 4, 1          // Payload IP
+      192, 168, apSubnet, 1          // Payload IP
     };
     
     memcpy(&response[respLen], answer, sizeof(answer));
@@ -625,8 +699,8 @@ void loop() {
         WiFi.scanDelete();
 
         WiFi.mode(WIFI_AP_STA);
-        IPAddress local_ip(192, 168, 4, 1);
-        IPAddress gateway(192, 168, 4, 1);
+        IPAddress local_ip = getApIP();
+        IPAddress gateway = getApIP();
         IPAddress subnet(255, 255, 255, 0);
         WiFi.softAPConfig(local_ip, gateway, subnet);
         WiFi.softAP(AP_SSID, AP_PASS, targetChannel);

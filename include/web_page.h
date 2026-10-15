@@ -15,7 +15,7 @@ const char SETUP_HTML[] PROGMEM = R"rawliteral(
     :root {
       --bg: #0f1115;
       --card: #181b21;
-      --accent: #ff6d00;
+      --accent: #2979ff;
       --blue: #2979ff;
       --text: #f0f2f5;
       --subtext: #8a93a0;
@@ -72,7 +72,7 @@ const char SETUP_HTML[] PROGMEM = R"rawliteral(
       cursor: pointer;
       padding: 0;
     }
-    select, input[type="password"], input[type="text"] {
+    select, input[type="password"], input[type="text"], input[type="number"] {
       width: 100%;
       background: #21252d;
       border: 1px solid var(--border);
@@ -83,23 +83,77 @@ const char SETUP_HTML[] PROGMEM = R"rawliteral(
       margin-bottom: 14px;
       outline: none;
     }
-    select:focus, input:focus { border-color: var(--accent); }
-    button[type="submit"], .btn-action, .btn-orange, .btn-blue{
+
+    /* File input styling */
+    input[type="file"] {
       width: 100%;
-      color: white;
-      border: none;
-      padding: 13px;
+      background: #21252d;
+      border: 1px solid var(--border);
       border-radius: 8px;
-      font-size: 0.95rem;
+      padding: 10px 12px;
+      color: var(--subtext);
+      font-size: 0.85rem;
+      margin-bottom: 14px;
+      outline: none;
+      cursor: pointer;
+    }
+    input[type="file"]::file-selector-button {
+      background: var(--border);
+      color: var(--text);
+      border: 1px solid var(--border);
+      padding: 6px 14px;
+      border-radius: 6px;
+      font-size: 0.8rem;
       font-weight: 700;
       cursor: pointer;
-      text-align: center;
-      text-decoration: none;
-      display: block;
+      margin-right: 12px;
+      transition: background 0.15s;
     }
-    button:active, .btn-action:active { opacity: 0.85; }
-    .btn-orange { background: var(--accent); }
-    .btn-blue { background: var(--blue); }
+    input[type="file"]::file-selector-button:active {
+      background: var(--card-inner);
+    }
+
+    /* Subnet Input Group */
+    .ip-input-group {
+      display: flex;
+      align-items: center;
+      background: #21252d;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 0 14px;
+      margin-bottom: 14px;
+    }
+    .ip-input-group:focus-within {
+      border-color: var(--accent);
+    }
+    .ip-input-group span {
+      font-family: monospace;
+      font-size: 1.05rem;
+      color: var(--subtext);
+      font-weight: 600;
+    }
+    .ip-input-group input[type="number"] {
+      width: 70px;
+      background: transparent;
+      border: none;
+      padding: 12px 4px;
+      margin-bottom: 0;
+      text-align: center;
+      font-size: 1.1rem;
+      font-weight: 800;
+      color: var(--accent);
+      -moz-appearance: textfield;
+    }
+    .ip-input-group input[type="number"]::-webkit-outer-spin-button,
+    .ip-input-group input[type="number"]::-webkit-inner-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
+    }  
+    
+    #progressBar {
+      background: var(--accent);
+    }
+
     .toggle-link {
       color: var(--accent);
       font-size: 0.8rem;
@@ -117,6 +171,43 @@ const char SETUP_HTML[] PROGMEM = R"rawliteral(
       font-size: 0.8rem;
       text-align: center;
       color: var(--subtext);
+    }
+
+    /* Primary buttons: unified orange across all forms */
+    button[type="submit"], .btn-action, .btn-primary {
+      width: 100%;
+      background: var(--accent);
+      color: white;
+      border: 1px solid transparent;
+      padding: 13px;
+      border-radius: 8px;
+      font-size: 0.95rem;
+      font-weight: 700;
+      cursor: pointer;
+      text-align: center;
+      text-decoration: none;
+      display: block;
+      transition: opacity 0.15s, background 0.15s;
+    }
+    button[type="submit"]:active, .btn-action:active, .btn-primary:active {
+      opacity: 0.85;
+    }
+
+    /* Secondary utility buttons (e.g. Send Test) */
+    .btn-secondary {
+      background: #21252d;
+      color: var(--text);
+      border: 1px solid var(--border);
+      padding: 13px;
+      border-radius: 8px;
+      font-size: 0.95rem;
+      font-weight: 700;
+      cursor: pointer;
+      text-align: center;
+      transition: background 0.15s;
+    }
+    .btn-secondary:active {
+      background: var(--border);
     }
 
     /* Custom Dialog */
@@ -145,7 +236,7 @@ const char SETUP_HTML[] PROGMEM = R"rawliteral(
 
     <!-- Form 1: Push Notifications -->
     <div class="card">
-      <h2 style="color: var(--accent);">Push Notifications</h2>
+      <h2>Push Notifications</h2>
       <div class="subtext">Update your ntfy.sh alert channel. Applies immediately without rebooting.</div>
       <form onsubmit="saveNtfy(event)">
         <div class="label-row">
@@ -154,15 +245,15 @@ const char SETUP_HTML[] PROGMEM = R"rawliteral(
         <input type="text" id="ntfy" name="ntfy" placeholder="mak-grill-alerts-test" required>
         
         <div style="display: flex; gap: 8px;">
-          <button type="submit" class="btn-orange" style="flex: 2;">Save Topic</button>
-          <button type="button" class="btn-blue" style="flex: 1;" onclick="testNtfy()">Send Test</button>
+          <button type="submit" class="btn-primary" style="flex: 2;">Save Topic</button>
+          <button type="button" class="btn-secondary" style="flex: 1;" onclick="testNtfy()">Send Test</button>
         </div>
       </form>
     </div>
 
     <!-- Form 2: Wi-Fi Setup -->
     <div class="card">
-      <h2 style="color: var(--blue);">Wi-Fi Connection</h2>
+      <h2>Wi-Fi Connection</h2>
       <div class="subtext">Connect your controller to a local 2.4 GHz home network.</div>
 
       <form onsubmit="submitWifi(event)">
@@ -192,16 +283,58 @@ const char SETUP_HTML[] PROGMEM = R"rawliteral(
         </div>
         <input type="password" id="pass" name="pass" placeholder="Network Password">
 
-        <button type="submit" class="btn-blue">Save Wi-Fi & Connect</button>
+        <button type="submit" class="btn-primary">Save Wi-Fi & Connect</button>
       </form>
     </div>
+
+    <!-- Form 3: Local AP Subnet Configuration -->
+    <div class="card">
+      <h2>Access Point Subnet</h2>
+      <div class="subtext">
+        Change the local subnet to prevent collisions with your home network. Default is <code>4</code> (192.168.<strong>4</strong>.1).
+      </div>
+      <form onsubmit="saveSubnet(event)">
+        <div class="label-row">
+          <label for="apSubnet">3RD OCTET (192.168.X.1)</label>
+        </div>
+        <div class="ip-input-group">
+          <span>192.168.</span>
+          <input type="number" id="apSubnet" name="subnet" min="0" max="254" required>
+          <span>.1</span>
+        </div>
+        <button type="submit" class="btn-primary">Save Subnet & Reboot</button>
+      </form>
+    </div>
+
+    <!-- Form 4: Firmware OTA Update -->
+    <div class="card">
+      <h2>Firmware Update</h2>
+      <div class="subtext">Upload a compiled <code>firmware.bin</code> file to flash the controller wirelessly.</div>
+      
+      <form onsubmit="uploadFirmware(event)">
+        <div class="label-row">
+          <label for="firmwareFile">SELECT FIRMWARE (.BIN)</label>
+        </div>
+        <input type="file" id="firmwareFile" accept=".bin" required>
+        
+        <div id="progressContainer" style="display: none; margin-bottom: 14px;">
+          <div style="width: 100%; background: #21252d; border-radius: 6px; overflow: hidden; height: 12px;">
+            <div id="progressBar" style="width: 0%; height: 100%; transition: width 0.1s;"></div>
+          </div>
+          <div id="progressPercent" class="subtext" style="text-align: right; margin-top: 4px;">0%</div>
+        </div>
+
+        <button type="submit" id="btnUpload" class="btn-primary">Upload Firmware</button>
+      </form>
+    </div>
+
 
     <div style="margin-bottom: 16px;">
       <a href="/" class="btn-action" style="background:#21252d; border:1px solid var(--border);">Continue to Dashboard (Standalone AP)</a>
     </div>
 
     <div class="ip-box">
-      Access Point IP: <strong>192.168.4.1</strong>
+      Access Point IP: <strong id="apIpDisplay">192.168.4.1</strong>
     </div>
     <!-- Custom Dialog Modal -->
     <div id="dialogBackdrop" class="dialog-backdrop">
@@ -336,7 +469,15 @@ const char SETUP_HTML[] PROGMEM = R"rawliteral(
         if (data.ntfy) {
           document.getElementById('ntfy').value = data.ntfy;
         }
-      } catch (err) {}
+        if (data.ap_subnet !== undefined) {
+          document.getElementById('apSubnet').value = data.ap_subnet;
+          document.getElementById('apIpDisplay').textContent = `192.168.${data.ap_subnet}.1`;
+        } else {
+          document.getElementById('apSubnet').value = 4;
+        }
+      } catch (err) {
+        document.getElementById('apSubnet').value = 4;
+      }
     }
 
     async function loadNetworks(forceRescan = false) {
@@ -427,6 +568,102 @@ const char SETUP_HTML[] PROGMEM = R"rawliteral(
 
         backdrop.classList.add('open');
       });
+    }
+
+    async function saveSubnet(e) {
+      e.preventDefault();
+      const val = parseInt(document.getElementById('apSubnet').value);
+      if (isNaN(val) || val < 0 || val > 254) {
+        await showDialog('Please enter a valid octet between 0 and 254.');
+        return;
+      }
+
+      if (!(await showDialog(`Change AP IP to 192.168.${val}.1? The controller will reboot.`, true))) {
+        return;
+      }
+
+      const btn = e.target.querySelector('button[type="submit"]');
+      const originalText = btn.textContent;
+      btn.textContent = 'Saving & Rebooting...';
+      btn.style.opacity = '0.7';
+
+      const formData = new URLSearchParams();
+      formData.append('subnet', val);
+
+      try {
+        await fetch('/api/ap/save', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+          body: formData.toString()
+        });
+        await showDialog(`Subnet saved! Controller is rebooting. Reconnect your phone/PC to the AP at 192.168.${val}.1`);
+      } catch (err) {
+        await showDialog('Error saving subnet setting.');
+      }
+
+      btn.textContent = originalText;
+      btn.style.opacity = '1';
+    }
+
+    async function uploadFirmware(e) {
+      e.preventDefault();
+      const fileInput = document.getElementById('firmwareFile');
+      if (!fileInput.files.length) {
+        await showDialog('Please select a .bin file.');
+        return;
+      }
+
+      const file = fileInput.files[0];
+      if (!file.name.endsWith('.bin')) {
+        await showDialog('Invalid file type. Please upload a .bin firmware file.');
+        return;
+      }
+
+      if (!(await showDialog(`Flash "${file.name}" to the controller? Do not unplug or power off during this process!`, true))) {
+        return;
+      }
+
+      const btn = document.getElementById('btnUpload');
+      const progressContainer = document.getElementById('progressContainer');
+      const progressBar = document.getElementById('progressBar');
+      const progressPercent = document.getElementById('progressPercent');
+
+      btn.disabled = true;
+      btn.style.opacity = '0.5';
+      progressContainer.style.display = 'block';
+
+      const xhr = new XMLHttpRequest();
+      xhr.open('POST', '/api/update', true);
+
+      xhr.upload.onprogress = (event) => {
+        if (event.lengthComputable) {
+          const percent = Math.round((event.loaded / event.total) * 100);
+          progressBar.style.width = percent + '%';
+          progressPercent.textContent = percent + '%';
+        }
+      };
+
+      xhr.onload = async () => {
+        if (xhr.status === 200) {
+          progressPercent.textContent = 'Complete! Rebooting...';
+          await showDialog('Firmware updated successfully! The controller is restarting now.');
+          setTimeout(() => { window.location.href = '/'; }, 4000);
+        } else {
+          await showDialog('Firmware update failed! Check serial log for details.');
+          btn.disabled = false;
+          btn.style.opacity = '1';
+        }
+      };
+
+      xhr.onerror = async () => {
+        await showDialog('Upload error. Connection to controller was interrupted.');
+        btn.disabled = false;
+        btn.style.opacity = '1';
+      };
+
+      const formData = new FormData();
+      formData.append('firmware', file);
+      xhr.send(formData);
     }
   </script>
 </body>
