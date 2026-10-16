@@ -134,6 +134,22 @@ Once the ESP32 is successfully connected to your home network, you no longer nee
 
 No account creation or registration is required. When a probe reaches its target temperature, the ESP32 will send an alert directly to this channel.
 
+## Advanced Features & Maintenance
+
+### Over-The-Air (OTA) Updates
+You no longer need to unplug the ESP32 and connect it to a computer to install new features. Once the initial firmware is flashed via USB, you can update it wirelessly:
+1. Download the latest `firmware.bin` from the Releases page.
+2. Open your dashboard and navigate to the **Settings** page.
+3. Scroll down to the **Firmware Update** card.
+4. Click **Choose File** to select the `.bin` file, then click **Upload Firmware**. The controller will install the update, show a progress bar, and reboot automatically.
+
+### Customizing the Access Point Subnet
+By default, the ESP32 broadcasts its local grill network on `192.168.4.1`. If your home router already uses the `192.168.4.X` subnet, the controller may fail to connect to your home network or route traffic properly due to an IP collision.
+1. Open the **Settings** page and locate the **Access Point Subnet** card.
+2. Change the 3rd octet to a safe value (e.g., change `4` to `8` to use `192.168.8.1`).
+3. Click **Save Subnet & Reboot**. 
+
+*Note: Your grill will still automatically connect to the `MAK` network without any changes, but if your controller ever disconnects from your home Wi-Fi, you will need to access the configuration portal using your newly assigned IP address instead of the default.*
 
 ## Disclaimer and Safety Warning
 
